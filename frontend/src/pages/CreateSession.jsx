@@ -17,7 +17,7 @@ function CreateSession() {
       try {
         const { data } = await api.get("/sports");
         setSports(data.sports);
-      } catch (error) {
+      } catch {
         setError("Failed to load sports");
       }
     };

@@ -22,13 +22,37 @@ function Dashboard() {
       setMySessions(my.data.sessions);
       setAvailableSessions(available.data.sessions);
       setJoinedSessions(joined.data.sessions);
-    } catch (error) {
-      setError(error.response?.data?.message || "Failed to load sessions");
+    } catch (err) {
+      setError(err.response?.data?.message || "Failed to load sessions");
     }
   };
 
   useEffect(() => {
-    loadSessions();
+    let ignore = false;
+    const fetchSessions = async () => {
+      try {
+        const [my, available, joined] = await Promise.all([
+          api.get("/sessions/my"),
+          api.get("/sessions/available"),
+          api.get("/sessions/joined"),
+        ]);
+
+        if (!ignore) {
+          setMySessions(my.data.sessions);
+          setAvailableSessions(available.data.sessions);
+          setJoinedSessions(joined.data.sessions);
+        }
+      } catch (err) {
+        if (!ignore) {
+          setError(err.response?.data?.message || "Failed to load sessions");
+        }
+      }
+    };
+
+    fetchSessions();
+    return () => {
+      ignore = true;
+    };
   }, []);
 
   const joinSession = async (id) => {

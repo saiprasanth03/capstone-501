@@ -16,12 +16,33 @@ function AdminDashboard() {
   const [error, setError] = useState("");
 
   const loadSports = async () => {
-    const { data } = await api.get("/sports");
-    setSports(data.sports);
+    try {
+      const { data } = await api.get("/sports");
+      setSports(data.sports);
+    } catch (err) {
+      setError(err.response?.data?.message || "Failed to load sports");
+    }
   };
 
   useEffect(() => {
-    loadSports();
+    let ignore = false;
+    const fetchSports = async () => {
+      try {
+        const { data } = await api.get("/sports");
+        if (!ignore) {
+          setSports(data.sports);
+        }
+      } catch (err) {
+        if (!ignore) {
+          setError(err.response?.data?.message || "Failed to load sports");
+        }
+      }
+    };
+
+    fetchSports();
+    return () => {
+      ignore = true;
+    };
   }, []);
 
   const createSport = async (e) => {

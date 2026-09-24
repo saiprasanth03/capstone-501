@@ -99,11 +99,6 @@ const getMySessions = async (req, res) => {
   }
 };
 
-module.exports = {
-  createSession,
-  getMySessions,
-};
-
 const getAvailableSessions = async (req, res) => {
   try {
     const sessions = await Session.find({
