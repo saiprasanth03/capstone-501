@@ -16,7 +16,22 @@ connectDB();
 
 app.use(
   cors({
-    origin: process.env.CLIENT_URL,
+    origin: (origin, callback) => {
+      // allow requests with no origin (like mobile apps, curl, postman)
+      if (!origin) return callback(null, true);
+      const allowed = [
+        process.env.CLIENT_URL,
+        "http://localhost:5173",
+        "http://localhost:5178",
+        "http://localhost:3000",
+        "http://127.0.0.1:5173",
+        "http://127.0.0.1:5178",
+      ];
+      if (allowed.includes(origin) || origin.startsWith("http://localhost:")) {
+        return callback(null, true);
+      }
+      return callback(null, true);
+    },
     credentials: true,
   })
 );
